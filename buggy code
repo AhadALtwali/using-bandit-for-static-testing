@@ -1,0 +1,69 @@
+import os
+import subprocess
+import tempfile
+import pickle
+import hashlib
+import random
+import requests
+import yaml
+
+API_KEY = "1234567890abcdef"  # Hardcoded secret
+
+def login():
+    username = input("Username: ")
+    password = input("Password: ")
+
+    hashed = hashlib.md5(password.encode()).hexdigest()  # Weak hash
+    print(f"User {username} logged in with hash {hashed}")
+
+def execute_command():
+    cmd = input("Command: ")
+    subprocess.Popen(cmd, shell=True)  # Command Injection
+
+def evaluate_expression():
+    expr = input("Expression: ")
+    print(eval(expr))  # Code Injection
+
+def load_pickle():
+    filename = input("Pickle file: ")
+    with open(filename, "rb") as f:
+        data = pickle.load(f)  # Unsafe deserialization
+        print(data)
+
+def load_yaml():
+    filename = input("YAML file: ")
+    with open(filename, "r") as f:
+        data = yaml.load(f, Loader=yaml.Loader)  # Unsafe YAML loading
+        print(data)
+
+def insecure_tempfile():
+    path = tempfile.mktemp()  # Insecure temp file
+    with open(path, "w") as f:
+        f.write("secret")
+
+def weak_random():
+    otp = random.randint(100000, 999999)  # Not cryptographically secure
+    print("OTP:", otp)
+
+def insecure_request():
+    response = requests.get(
+        "https://example.com",
+        verify=False  # SSL verification disabled
+    )
+    print(response.status_code)
+
+def read_file():
+    filename = input("File name: ")
+    with open(filename, "r") as f:  # Path Traversal risk
+        print(f.read())
+
+if __name__ == "__main__":
+    login()
+    execute_command()
+    evaluate_expression()
+    load_pickle()
+    load_yaml()
+    insecure_tempfile()
+    weak_random()
+    insecure_request()
+    read_file()
